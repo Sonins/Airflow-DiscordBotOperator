@@ -47,3 +47,5 @@ repos:
       - id: flake8
         name: Run flake8 format checker.
         files: \.py$
+        args:
+          - --ignore=E501

@@ -14,7 +14,7 @@ repos:
           - --comment-style
           - "|#|"
           - --license-filepath
-          - LICENSE.txt
+          - license-template/LICENSE.txt
           - --fuzzy-match-generates-todo
   # Auto formatting pre-commit hook.
   - repo: https://github.com/pycqa/pydocstyle

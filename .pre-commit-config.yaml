@@ -16,12 +16,12 @@ repos:
           - --license-filepath
           - license-template/LICENSE.txt
           - --fuzzy-match-generates-todo
-  # Auto formatting pre-commit hook.
+  # Run pydocstyle hook.
   - repo: https://github.com/pycqa/pydocstyle
     rev: 6.1.1
     hooks:
       - id: pydocstyle
-        name: Auto formatting python files.
+        name: Run pydocstyle
         args:
           - --convention=pep257
           - --add-ignore=D100,D102,D103,D104,D105,D107,D205,D400,D401
@@ -31,4 +31,11 @@ repos:
     hooks:
       - id: isort
         name: Run isort to sort imports in python file.
+        files: \.py$
+  # Auto formatting pre-commit hook.
+  - repo: https://github.com/pyCQA/flake8
+    rev: 3.9.2
+    hooks:
+    -   id: flake8
+        name: Auto formatting using flake8.
         files: \.py$

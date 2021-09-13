@@ -14,16 +14,3 @@
 # KIND, either express or implied.  See the License for the
 # specific language governing permissions and limitations
 # under the License.
-
-from airflow.plugins_manager import AirflowPlugin
-from hooks.discord_bot_hook import DiscordBotWebhookHook
-from operators.discord_bot_operator import DiscordBotOperator
-
-
-class DiscordBotPlugin(AirflowPlugin):
-    """Airflow plugin enabling Discord bot operator."""
-
-    name = "DiscordBotPlugin"
-    hooks = [DiscordBotWebhookHook]
-    operators = [DiscordBotOperator]
-    flask_blueprints = []

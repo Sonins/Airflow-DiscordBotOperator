@@ -20,6 +20,7 @@ import warnings
 from typing import Any, Dict, Optional
 
 from airflow.exceptions import AirflowException, AirflowNotFoundException
+from airflow.plugins_manager import AirflowPlugin
 from airflow.providers.http.hooks.http import HttpHook
 from airflow.providers.http.operators.http import SimpleHttpOperator
 
@@ -178,3 +179,12 @@ class DiscordBotOperator(SimpleHttpOperator):
             tts=self.tts,
         )
         self.hook.execute()
+
+
+class DiscordBotPlugin(AirflowPlugin):
+    """Airflow plugin enabling Discord bot operator."""
+
+    name = "DiscordBotPlugin"
+    hooks = [DiscordBotWebhookHook]
+    operators = [DiscordBotOperator]
+    flask_blueprints = []

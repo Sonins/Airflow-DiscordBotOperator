@@ -33,9 +33,17 @@ repos:
         name: Run isort to sort imports in python file.
         files: \.py$
   # Auto formatting pre-commit hook.
+  - repo: https://github.com/ambv/black
+    rev: 21.8b0
+    hooks:
+      - id: black
+        name: Run black python formatter.
+        language_version: python3.8
+        files: \.py$
+  # Flake8 format checker.
   - repo: https://github.com/pyCQA/flake8
     rev: 3.9.2
     hooks:
-    -   id: flake8
-        name: Auto formatting using flake8.
+      - id: flake8
+        name: Run flake8 format checker.
         files: \.py$

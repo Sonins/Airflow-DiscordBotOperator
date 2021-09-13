@@ -17,14 +17,13 @@
 
 import json
 import warnings
-
 from typing import Any, Dict, List, Optional
 
 from airflow.exceptions import AirflowException, AirflowNotFoundException
-
 from airflow.providers.http.hooks.http import HttpHook
 
-class discordBotWebhookHook(HttpHook):
+
+class DiscordBotWebhookHook(HttpHook):
     """
     This hook allows you to make bot send a message to channel selected.
     Takes a Discord connection ID 

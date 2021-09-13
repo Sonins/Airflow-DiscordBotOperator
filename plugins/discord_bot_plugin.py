@@ -17,21 +17,22 @@
 
 import json
 import warnings
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 from airflow.exceptions import AirflowException, AirflowNotFoundException
 from airflow.providers.http.hooks.http import HttpHook
+from airflow.providers.http.operators.http import SimpleHttpOperator
 
 
 class DiscordBotWebhookHook(HttpHook):
     """
     This hook allows you to make bot send a message to channel selected.
-    Takes a Discord connection ID 
-    :param http_conn_id: Http connection ID with host as "https://discord.com/api/" and
-                         default webhook endpoint in the extra field in the form of
+    Takes a Discord connection ID
+    :param http_conn_id: Http connection ID with host as "https://discord.com/api/"
+                         and default webhook endpoint in the extra field in the form of
                          {"endpoint": "channels/{channel_id}/messages",
                           "channel": "CHANNEL_ID"}.
-                         If you want supply a channel information with connection 
+                         If you want supply a channel information with connection
                          extra field, either endpoint or channel should be specified.
     :type http_conn_id: str
     :param message: The message you want to send to your Discord channel
@@ -67,12 +68,12 @@ class DiscordBotWebhookHook(HttpHook):
     def _get_token(self, http_conn_id: str) -> str:
 
         conn = self.get_connection(http_conn_id)
-        if getattr(conn, 'password', None):
+        if getattr(conn, "password", None):
             return conn.password
         elif http_conn_id:
             extra = conn.extra_dejson
-            bot_token = extra.get('bot_token', '')
-            
+            bot_token = extra.get("bot_token", "")
+
             if bot_token:
                 warnings.warn(
                     "'password' field is more recommended than 'bot_token' in 'extra'.",
@@ -82,39 +83,44 @@ class DiscordBotWebhookHook(HttpHook):
 
             return bot_token
         else:
-            raise AirflowNotFoundException('Cannot get token: No valid token nor http_conn_id supplied.')
-    
+            raise AirflowNotFoundException(
+                "Cannot get token: No valid token nor http_conn_id supplied."
+            )
+
     def _get_endpoint(self, http_conn_id: str, channel: str) -> str:
 
         conn = self.get_connection(http_conn_id)
 
         if channel:
-            return f'channels/{channel}/messages'
-        
+            return f"channels/{channel}/messages"
+
         if http_conn_id:
             extra = conn.extra_dejson
-            channel = extra.get('channel', '')
+            channel = extra.get("channel", "")
             if channel:
-                return f'channels/{channel}/messages'
-            
-            endpoint = extra.get('endpoint', '')
+                return f"channels/{channel}/messages"
+
+            endpoint = extra.get("endpoint", "")
             if endpoint:
                 return endpoint
 
         else:
-            raise AirflowNotFoundException('Cannot get token: No valid channel_id nor http_conn_id supplied.')
+            raise AirflowNotFoundException(
+                "Cannot get token: No valid channel_id nor http_conn_id supplied."
+            )
 
     def _build_payload(self, message: str) -> str:
 
         payload = {}
         if len(message) <= 2000:
-            payload['content'] = message
+            payload["content"] = message
         else:
-            raise AirflowException('Discord message length must be 2000 or fewer characters.')
-        payload['tts'] = self.tts
+            raise AirflowException(
+                "Discord message length must be 2000 or fewer characters."
+            )
+        payload["tts"] = self.tts
 
         return json.dumps(payload)
-        
 
     def execute(self) -> None:
 
@@ -124,7 +130,51 @@ class DiscordBotWebhookHook(HttpHook):
             endpoint=self.endpoint,
             data=discord_payload,
             headers={
-                'Content-type': 'application/json',
-                'Authorization': 'Bot ' + self.token
+                "Content-type": "application/json",
+                "Authorization": "Bot " + self.token,
             },
         )
+
+
+class DiscordBotOperator(SimpleHttpOperator):
+    """
+    This operator allows you to make bot send a message.
+    :param http_conn_id: Http connection ID with host as "https://discord.com/api/" and
+                         default webhook endpoint in the extra field in the form of
+                         {"endpoint": "channels/{channel_id}/messages",
+                          "channel": "CHANNEL_ID"}.
+                         If you want supply a channel information with connection
+                         extra field, either endpoint or channel should be specified.
+    :type http_conn_id: str
+    :param message: The message you want to send to your Discord channel
+                    (max 2000 characters)
+    :type message: str
+    :param channel: Channel id where bot should send a message.
+    :type channel: str
+    :param tts: Is a text-to-speech message
+    :type tts: bool
+    """
+
+    def __init__(
+        self,
+        http_conn_id: str,
+        message: str = "",
+        channel: str = "",
+        tts: bool = False,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.http_conn_id = http_conn_id
+        self.message = message
+        self.channel = channel
+        self.tts = tts
+
+    def execute(self, context: Dict[str, Any]) -> Any:
+        """Call DiscordBotWebhookHook to send messages."""
+        self.hook = DiscordBotWebhookHook(
+            http_conn_id=self.http_conn_id,
+            channel=self.channel,
+            message=self.message,
+            tts=self.tts,
+        )
+        self.hook.execute()

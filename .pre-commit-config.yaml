@@ -1,0 +1,27 @@
+default_stages: [commit, push]
+default_language_version:
+  python: python3
+minimum_pre_commit_version: "1.20.0"
+repos:
+  # Insert license pre-commit hook.
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.1.10
+    hooks:
+      - id: insert-license
+        name: Add license for all python files.
+        files: \.py$
+        args:
+          - --comment-style
+          - "|#|"
+          - --license-filepath
+          - LICENSE.txt
+          - --fuzzy-match-generates-todo
+  # Auto formatting pre-commit hook.
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.1.1
+    hooks:
+      - id: pydocstyle
+        name: Auto formatting python files.
+        args:
+          - --convention=pep257
+          - --add-ignore=D100,D102,D103,D104,D105,D107,D205,D400,D401

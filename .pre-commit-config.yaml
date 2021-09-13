@@ -25,3 +25,10 @@ repos:
         args:
           - --convention=pep257
           - --add-ignore=D100,D102,D103,D104,D105,D107,D205,D400,D401
+  # Sort library import order.
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.9.3
+    hooks:
+      - id: isort
+        name: Run isort to sort imports in python file.
+        files: \.py$

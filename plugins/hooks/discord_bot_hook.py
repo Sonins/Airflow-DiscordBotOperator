@@ -40,6 +40,7 @@ class DiscordBotWebhookHook(HttpHook):
     :param channel: Channel id where bot should send a message.
     :type channel: str
     :param json_payload: Json payload to build a message.
+                         If this is used, 'message' parameter will be ignored.
     :type json_payload: str
     :param tts: Is a text-to-speech message
     :type tts: bool

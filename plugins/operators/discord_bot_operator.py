@@ -35,6 +35,7 @@ class DiscordBotOperator(SimpleHttpOperator):
                     (max 2000 characters)
     :type message: str
     :param json: Json payload to build a message.
+                 If this is used, 'message' parameter will be ignored.
     :type json: str
     :param channel: Channel id where bot should send a message.
     :type channel: str

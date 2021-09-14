@@ -34,16 +34,21 @@ class DiscordBotOperator(SimpleHttpOperator):
     :param message: The message you want to send to your Discord channel
                     (max 2000 characters)
     :type message: str
+    :param json: Json payload to build a message.
+    :type json: str
     :param channel: Channel id where bot should send a message.
     :type channel: str
     :param tts: Is a text-to-speech message
     :type tts: bool
     """
 
+    template_fields = ["message", "json"]
+
     def __init__(
         self,
         http_conn_id: str,
         message: str = "",
+        json: str = "",
         channel: str = "",
         tts: bool = False,
         **kwargs: Any,
@@ -51,6 +56,7 @@ class DiscordBotOperator(SimpleHttpOperator):
         super().__init__(**kwargs)
         self.http_conn_id = http_conn_id
         self.message = message
+        self.json = json
         self.channel = channel
         self.tts = tts
 
@@ -60,6 +66,7 @@ class DiscordBotOperator(SimpleHttpOperator):
             http_conn_id=self.http_conn_id,
             channel=self.channel,
             message=self.message,
+            json_payload=self.json,
             tts=self.tts,
         )
         self.hook.execute()

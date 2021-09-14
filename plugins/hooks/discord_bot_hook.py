@@ -34,11 +34,13 @@ class DiscordBotWebhookHook(HttpHook):
                          If you want supply a channel information with connection
                          extra field, either endpoint or channel should be specified.
     :type http_conn_id: str
-    :param message: The message you want to send to your Discord channel
+    :param message: The simple message you want to send to your Discord channel
                     (max 2000 characters)
     :type message: str
     :param channel: Channel id where bot should send a message.
     :type channel: str
+    :param json_payload: Json payload to build a message.
+    :type json_payload: str
     :param tts: Is a text-to-speech message
     :type tts: bool
     """
@@ -53,6 +55,7 @@ class DiscordBotWebhookHook(HttpHook):
         http_conn_id: Optional[str] = None,
         message: str = "",
         channel: str = "",
+        json_payload: str = "",
         tts: bool = False,
         *args: Any,
         **kwargs: Any,
@@ -62,6 +65,7 @@ class DiscordBotWebhookHook(HttpHook):
         self.token = self._get_token(http_conn_id)
         self.endpoint = self._get_endpoint(http_conn_id, channel)
         self.message = message
+        self.json_payload = json_payload
         self.tts = tts
 
     def _get_token(self, http_conn_id: str) -> str:
@@ -108,7 +112,10 @@ class DiscordBotWebhookHook(HttpHook):
                 "Cannot get token: No valid channel_id nor http_conn_id supplied."
             )
 
-    def _build_payload(self, message: str) -> str:
+    def _build_payload(self, message: str, json_payload: str) -> str:
+
+        if json_payload:
+            return json_payload
 
         payload = {}
         if len(message) <= 2000:
@@ -123,7 +130,7 @@ class DiscordBotWebhookHook(HttpHook):
 
     def execute(self) -> None:
 
-        discord_payload = self._build_payload(self.message)
+        discord_payload = self._build_payload(self.message, self.json_payload)
 
         self.run(
             endpoint=self.endpoint,

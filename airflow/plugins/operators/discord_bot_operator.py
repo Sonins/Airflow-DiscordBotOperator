@@ -17,8 +17,9 @@
 
 from typing import Any, Dict
 
-from airflow.providers.http.operators.http import SimpleHttpOperator
 from hooks.discord_bot_hook import DiscordBotWebhookHook
+
+from airflow.providers.http.operators.http import SimpleHttpOperator
 
 
 class DiscordBotOperator(SimpleHttpOperator):

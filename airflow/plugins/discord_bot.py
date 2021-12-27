@@ -15,8 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-from hooks.discord_bot_hook import DiscordBotWebhookHook
-from operators.discord_bot_operator import DiscordBotOperator
+from hooks.discord_bot import DiscordBotWebhookHook
+from operators.discord_bot import DiscordBotOperator
 
 from airflow.plugins_manager import AirflowPlugin
 
